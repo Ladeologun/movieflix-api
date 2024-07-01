@@ -1,0 +1,24 @@
+
+    spring:
+      application:
+        name: movieflixapi
+      datasource:
+        url: jdbc:postgresql://localhost:5432/movieflix
+        username: postgres
+        password: password
+        driver-class-name: org.postgresql.Driver
+      jpa:
+        hibernate:
+          ddl-auto: create
+        show-sql: true
+        repositories:
+          auditing:
+            enabled: true
+        properties:
+          hibernate:
+            format-sql: true
+        database: postgresql
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+    project:
+      poster: posters/
