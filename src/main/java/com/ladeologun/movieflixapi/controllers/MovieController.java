@@ -1,14 +1,16 @@
 package com.ladeologun.movieflixapi.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ladeologun.movieflixapi.dtos.MovieDto;
 import com.ladeologun.movieflixapi.services.MovieService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
@@ -19,11 +21,19 @@ public class MovieController {
 
     @PostMapping("/addMovie")
     public ResponseEntity<MovieDto> addMovie(
-            @RequestPart("file")MultipartFile file,
+            @RequestPart("file") MultipartFile file,
             @RequestPart("details") String movieDetails
-    ){
-        System.out.println(file.getOriginalFilename());
-        System.out.println(movieDetails);
-        return null;
+    ) throws IOException {
+
+        var movieDt0 = convertToMovieDto(movieDetails);
+        var savedMovie = movieService.addMovie(movieDt0, file);
+        return new ResponseEntity<>(savedMovie, HttpStatus.CREATED);
+
+    }
+
+    private MovieDto convertToMovieDto(String movieDtoString) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(movieDtoString, MovieDto.class);
+
     }
 }

@@ -16,12 +16,9 @@ public class FileServiceImpl implements FileService{
     public String uploadFile(String path, MultipartFile file) throws IOException {
 
         String fileName = file.getOriginalFilename();
-        String filePath = path + File.pathSeparator + fileName;
-        File fileObj = new File(filePath);
-        if (!fileObj.exists()){
-            fileObj.mkdir();
-        }
-        Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+        Path filePath = Paths.get(path, fileName);
+        Files.createDirectories(filePath.getParent());
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         return fileName;
     }
 

@@ -49,6 +49,7 @@ public class MovieServiceImpl implements MovieService{
                 .movieCasts(savedMovie.getMovieCasts())
                 .releaseYear(savedMovie.getReleaseYear())
                 .posterurl(posterUrl)
+                .poster(savedMovie.getPoster())
                 .build();
 
         return responseMovieDto;
