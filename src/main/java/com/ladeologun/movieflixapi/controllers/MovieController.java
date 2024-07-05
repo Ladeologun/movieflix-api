@@ -3,6 +3,7 @@ package com.ladeologun.movieflixapi.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ladeologun.movieflixapi.dtos.MovieDto;
+import com.ladeologun.movieflixapi.dtos.UpdateMovieDto;
 import com.ladeologun.movieflixapi.services.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,9 +32,36 @@ public class MovieController {
 
     }
 
+
+    @PutMapping("/{movieID}")
+    public ResponseEntity<UpdateMovieDto> updateMovieHandler(
+            @PathVariable("movieID") Integer movieID,
+            @RequestPart("file") MultipartFile file,
+            @RequestPart("details") String movieDetails
+    ) throws IOException {
+
+        MultipartFile file2 = null;
+        if (!file.isEmpty()){
+            file2 = file;
+        }
+
+        UpdateMovieDto updatedmovieDt0 = convertToupdateMovieDto(movieDetails);
+        var savedMovie = movieService.updateMovie(movieID,updatedmovieDt0,file2);
+        return new ResponseEntity<>(savedMovie, HttpStatus.OK);
+
+    }
+
+
+
     private MovieDto convertToMovieDto(String movieDtoString) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(movieDtoString, MovieDto.class);
+
+    }
+
+    private UpdateMovieDto convertToupdateMovieDto(String movieDtoString) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(movieDtoString, UpdateMovieDto.class);
 
     }
 }

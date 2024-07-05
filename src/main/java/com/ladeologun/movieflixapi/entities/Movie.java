@@ -2,10 +2,7 @@ package com.ladeologun.movieflixapi.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 
@@ -13,6 +10,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 @Builder
 public class Movie {
 
@@ -42,5 +40,9 @@ public class Movie {
     @Column(nullable = false)
     @NotBlank(message = "please provide movie's poster")
     private String poster;
+
+//    @Column(nullable = false)
+//    @NotBlank(message = "please provide movie's poster url")
+    private String posterUrl;
 
 }

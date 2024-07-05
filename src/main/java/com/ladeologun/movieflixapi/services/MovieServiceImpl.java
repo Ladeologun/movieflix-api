@@ -1,6 +1,7 @@
 package com.ladeologun.movieflixapi.services;
 
 import com.ladeologun.movieflixapi.dtos.MovieDto;
+import com.ladeologun.movieflixapi.dtos.UpdateMovieDto;
 import com.ladeologun.movieflixapi.entities.Movie;
 import com.ladeologun.movieflixapi.repositories.MovieRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +55,44 @@ public class MovieServiceImpl implements MovieService{
                 .build();
 
         return responseMovieDto;
+    }
+
+    @Override
+    public UpdateMovieDto updateMovie(Integer movieID, UpdateMovieDto updateMovieDto, MultipartFile file) {
+        Optional<Movie> possibleMovie = movieRepository.findByMovieId(movieID);
+        if (possibleMovie.isEmpty()){
+            throw new RuntimeException("movie with the id does not exists");
+        }
+        var movie = possibleMovie.get();
+        String fileName = null;
+        String posterUrl = null;
+        if(file != null){
+            fileService.deleteResourceFile(path, movie.getPoster());
+            try {
+                fileName = fileService.uploadFile(path, file);
+                posterUrl = baseUrl+"/file/"+fileName;
+
+            } catch (IOException e) {
+                throw new RuntimeException("unable to upload poster");
+            }
+        }
+
+        updateMovieDto.setPosterurl(posterUrl);
+        updateMovieDto.setPoster(fileName);
+        updateMovieDto.updateMovieFields(movie);
+        Movie savedMovie = movieRepository.save(movie);
+
+        return UpdateMovieDto.builder()
+                .title(savedMovie.getTitle())
+                .movieId(savedMovie.getMovieId())
+                .director(savedMovie.getDirector())
+                .studio(savedMovie.getStudio())
+                .releaseYear(savedMovie.getReleaseYear())
+                .movieCasts(savedMovie.getMovieCasts())
+                .poster(savedMovie.getPoster())
+                .posterurl(savedMovie.getPosterUrl())
+                .build();
+
     }
 
     @Override

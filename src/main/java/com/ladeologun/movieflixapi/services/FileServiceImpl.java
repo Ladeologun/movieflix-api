@@ -27,4 +27,15 @@ public class FileServiceImpl implements FileService{
         String filePath = path + File.pathSeparator + fileName;
         return new FileInputStream(filePath);
     }
+
+    @Override
+    public void deleteResourceFile(String path, String name)  {
+        Path filePath = Paths.get(path, name);
+        try {
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }
