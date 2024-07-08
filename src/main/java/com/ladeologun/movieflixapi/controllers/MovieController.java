@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -25,13 +26,32 @@ public class MovieController {
             @RequestPart("file") MultipartFile file,
             @RequestPart("details") String movieDetails
     ) throws IOException {
-
         var movieDt0 = convertToMovieDto(movieDetails);
         var savedMovie = movieService.addMovie(movieDt0, file);
         return new ResponseEntity<>(savedMovie, HttpStatus.CREATED);
-
     }
 
+    @GetMapping("/{movieId}")
+    public ResponseEntity<MovieDto> getMovieHandler (
+            @PathVariable("movieId") Integer id
+    ) {
+        MovieDto movie = movieService.getMovie(id);
+        return ResponseEntity.ok(movie);
+    }
+
+    @DeleteMapping("/{movieId}")
+    public ResponseEntity<?> deleteMovieHandler (
+            @PathVariable("movieId") Integer id
+    ) {
+        movieService.deleteMovie(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<MovieDto>> getAllMoviesHandler () {
+        List<MovieDto> movies= movieService.getAllMovies();
+        return ResponseEntity.ok(movies);
+    }
 
     @PutMapping("/{movieID}")
     public ResponseEntity<UpdateMovieDto> updateMovieHandler(
@@ -50,8 +70,6 @@ public class MovieController {
         return new ResponseEntity<>(savedMovie, HttpStatus.OK);
 
     }
-
-
 
     private MovieDto convertToMovieDto(String movieDtoString) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();

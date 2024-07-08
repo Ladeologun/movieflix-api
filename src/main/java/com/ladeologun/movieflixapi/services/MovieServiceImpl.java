@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -96,12 +97,48 @@ public class MovieServiceImpl implements MovieService{
     }
 
     @Override
+    public void deleteMovie(Integer movieId) {
+        Optional<Movie> potentialMovie= movieRepository.findByMovieId(movieId);
+        if(potentialMovie.isEmpty()){
+            throw new RuntimeException("movie does not exist");
+        }
+        fileService.deleteResourceFile(path, potentialMovie.get().getPoster());
+        movieRepository.delete(potentialMovie.get());
+
+    }
+
+    @Override
     public MovieDto getMovie(Integer movieId) {
-        return null;
+        Optional<Movie> potentialMovie= movieRepository.findByMovieId(movieId);
+        if(potentialMovie.isEmpty()){
+            throw new RuntimeException("movie does not exiat");
+        }
+        var movie = potentialMovie.get();
+        return MovieDto.builder()
+                .title(movie.getTitle())
+                .movieId(movie.getMovieId())
+                .director(movie.getDirector())
+                .studio(movie.getStudio())
+                .releaseYear(movie.getReleaseYear())
+                .movieCasts(movie.getMovieCasts())
+                .poster(movie.getPoster())
+                .posterurl(movie.getPosterUrl())
+                .build();
     }
 
     @Override
     public List<MovieDto> getAllMovies() {
-        return null;
+       List<Movie> movies = movieRepository.findAll();
+       return movies.stream().map((movie)->(MovieDto.builder()
+               .title(movie.getTitle())
+               .director(movie.getDirector())
+               .movieId(movie.getMovieId())
+               .studio(movie.getStudio())
+               .movieCasts(movie.getMovieCasts())
+               .releaseYear(movie.getReleaseYear())
+               .posterurl(movie.getPosterUrl())
+               .poster(movie.getPoster())
+               .build())).collect(Collectors.toList());
+
     }
 }

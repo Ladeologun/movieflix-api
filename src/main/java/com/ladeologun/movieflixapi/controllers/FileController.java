@@ -29,6 +29,7 @@ public class FileController {
         return ResponseEntity.ok(uploadedFileName);
     }
 
+
     @GetMapping("/{fileName}")
     public void serveFileHandler(
             @PathVariable String fileName, HttpServletResponse response
